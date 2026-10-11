@@ -42,12 +42,12 @@ const faqLd = (c: Content) => ({ "@context": "https://schema.org", "@type": "FAQ
 const TOOL_TITLES: Record<string, string> = {
   home: "Unscramble Words: Word Unscrambler & Finder",
   "anagram-solver": "Anagram Solver: Find Every Anagram of a Word",
-  "wordle-solver": "Wordle Solver & Helper: Possible Answers From Your Clues",
-  "scrabble-word-finder": "Scrabble Word Finder: Words & Points From Your Tiles",
+  "wordle-solver": "Wordle Solver: Find Possible Answers",
+  "scrabble-word-finder": "Scrabble Word Finder: Words From Your Rack",
   "words-with-friends-helper": "Words With Friends Cheat & Word Helper",
   "jumble-solver": "Jumble Solver: Unscramble Jumble Words",
   "spelling-bee-solver": "Spelling Bee Solver: All Words & Pangrams",
-  "letter-boxed-solver": "Letter Boxed Solver: Words & Two-Word Solutions",
+  "letter-boxed-solver": "Letter Boxed Solver: Two-Word Solutions",
 };
 
 export function toolMetadata(t: ToolItem): Metadata {

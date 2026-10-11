@@ -4,7 +4,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Contact ${SITE.name}: report a bug, suggest a new tool or ask a question about the site.`,
+  description: `Contact ${SITE.name}: report a bug or a wrong result, suggest a new template or tool, or ask a question. We read every message and reply as soon as we can.`,
   alternates: { canonical: "/contact/" },
 };
 
