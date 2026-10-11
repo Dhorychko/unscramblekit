@@ -1,0 +1,151 @@
+# Words never shown in results or lists (slurs, explicit or profane terms).
+# Lines starting with ~ block any word containing that root.
+~fuck
+~cunt
+~fagg
+~motherf
+~cocksuck
+~dickhead
+~bullshit
+~whore
+~slut
+~bitch
+~bastard
+~pussies
+~jizz
+~tranny
+fag
+fags
+faggy
+dyke
+dykes
+kike
+kikes
+spic
+spics
+chink
+chinks
+gook
+gooks
+wetback
+wetbacks
+coon
+coons
+darkie
+darkies
+honky
+honkies
+raghead
+ragheads
+towelhead
+gringo
+gringos
+paki
+pakis
+wop
+wops
+dago
+dagos
+kraut
+krauts
+jap
+japs
+negro
+negroes
+negress
+mulatto
+squaw
+squaws
+gyp
+gyps
+gypped
+gypping
+spaz
+spastic
+cripple
+cripples
+midget
+midgets
+homo
+homos
+queer
+queers
+lesbo
+lesbos
+pussy
+dick
+dicks
+dildo
+dildos
+cock
+cocks
+penis
+penises
+vagina
+vaginas
+clit
+clits
+clitoris
+orgasm
+orgasms
+orgy
+orgies
+porn
+porno
+porns
+pornography
+rape
+raped
+raper
+rapes
+raping
+rapist
+rapists
+anal
+anus
+butthole
+boob
+boobs
+tit
+tits
+titty
+titties
+crap
+crappy
+damn
+damned
+goddamn
+piss
+pissed
+pisses
+pissing
+arse
+arses
+asshole
+assholes
+nazi
+nazis
+hitler
+semen
+sperm
+horny
+sexy
+sex
+sexes
+sexed
+
+# --- pass 2: more slurs and explicit words, with inflections
+jew jews jewed jewing yid yids wog wogs sambo sambos darky darkey darkeys kafir kafirs kaffir kaffirs coolie coolies
+redskin redskins poof poofs poofter poofters cum cums cumming blowjob blowjobs ejaculate ejaculated ejaculates ejaculating
+ejaculation ejaculations boner boners shagged shagging turd turds bugger buggers buggered buggering buggery hooker hookers
+hussy hussies masturbate masturbated masturbates masturbating masturbation masturbatory bestiality goddamned goddam goddamns
+sexpot sexpots sexting sext sexts sexted fatso fatsos fatsoes arsed hymen hymens labia pickaninny pickaninnies jigaboo jigaboos
+golliwog golliwogs sheeny sheenies greaseball greaseballs halfbreed halfbreeds bohunk bohunks whitey whiteys whities negroid
+negroids mongoloid mongoloids mongol mongols fellatio cunnilingus sodomize sodomized sodomizes sodomizing sodomy sodomite
+sodomites pedophile pedophiles pedophilia paedophile paedophiles erection erections pubic pubes scrotum scrotums testicle
+testicles nipple nipples tits titted slutty skank skanks skanky douche douchebag douchebags twats prick pricks retard retards
+retarded bastard bastards bitch bitches bitchy wanker wankers wank wanks wanked wanking twat swastika swastikas
+
+# substring roots that are safe (no ordinary words contain them)
+nigger niggers niggerhead niggerheads ~nigga ~niggaz ~niggard ~shithead ~shitty ~shitload ~shitfaced ~shitwork ~horseshit ~chickenshit ~shitt
+shit shits
