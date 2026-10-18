@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "./JsonLd";
 import ToolFor from "./ToolFor";
-import { TOOLS, TOOL_BY_KEY, type ListItem, type ToolItem } from "@/lib/catalog";
+import { TOOLS, TOOL_BY_KEY, SUB_LENGTHS, type ListItem, type ToolItem } from "@/lib/catalog";
 import { TOOL_CONTENT, listContent, type Content } from "@/lib/content";
 import { THIN, allLists, listData } from "@/lib/lists";
 import { SITE, OG_BASE } from "@/lib/site";
@@ -102,14 +102,26 @@ export function ListPage({ it }: { it: ListItem }) {
   const d = listData(it);
   const c = listContent(it, d);
   const lists = allLists();
-  const parent = it.kind === "start5" || it.kind === "end5" || it.kind === "with5" ? lists.find((x) => x.key === "5-letter-words")! : undefined;
+  const isSub = it.kind === "start" || it.kind === "end" || it.kind === "with";
+  const isCombo = it.kind === "startend";
+  const parent = isSub || isCombo ? lists.find((x) => x.key === `${it.n}-letter-words`) : undefined;
   const crumbs: [string, string][] = [["Home", "/"], ...(parent ? [[parent.title, parent.path] as [string, string]] : []), [it.title, it.path]];
-  const nav = (kind: "start5" | "end5" | "with5", label: string) => (
+  // Letter rows for a given length: each present letter links to its subpage; missing letters are shown greyed (no dead links).
+  const nav = (kind: "start" | "end" | "with", label: string, navN: number) => (
     <div className="letter-nav"><span className="small muted">{label}</span>
-      {AZ.map((l) => { const x = lists.find((y) => y.kind === kind && y.letter === l); return x ? <Link prefetch={false} key={l} href={x.path} className={x.key === it.key ? "on" : undefined} aria-current={x.key === it.key ? "page" : undefined}>{l.toUpperCase()}</Link> : <span key={l} className="off">{l.toUpperCase()}</span>; })}
+      {AZ.map((l) => { const x = lists.find((y) => y.kind === kind && y.n === navN && y.letter === l); return x ? <Link prefetch={false} key={l} href={x.path} className={x.key === it.key ? "on" : undefined} aria-current={x.key === it.key ? "page" : undefined}>{l.toUpperCase()}</Link> : <span key={l} className="off">{l.toUpperCase()}</span>; })}
     </div>
   );
-  const isFive = it.n === 5;
+  // On a subpage, show its own length's rows; on a length hub that has subpages, surface them too (internal links + discovery).
+  const navN = it.n ?? 5;
+  const showNavs = isSub || (it.kind === "len" && SUB_LENGTHS.includes(it.n!));
+  // Rows for the start+end combo cluster (and links to it from the plain start/end pages).
+  const comboRow = (label: string, find: (l: string) => ListItem | undefined) => (
+    <div className="letter-nav"><span className="small muted">{label}</span>
+      {AZ.map((l) => { const x = find(l); return x ? <Link prefetch={false} key={l} href={x.path} className={x.key === it.key ? "on" : undefined} aria-current={x.key === it.key ? "page" : undefined}>{l.toUpperCase()}</Link> : <span key={l} className="off">{l.toUpperCase()}</span>; })}
+    </div>
+  );
+  const byStartEnd = (l1: string, l2: string) => lists.find((y) => y.kind === "startend" && y.letter === l1 && y.letter2 === l2);
   return (
     <>
       <JsonLd data={[crumbsLd(crumbs), faqLd(c)]} />
@@ -118,8 +130,12 @@ export function ListPage({ it }: { it: ListItem }) {
           <nav className="crumbs" aria-label="Breadcrumb">{crumbs.slice(0, -1).map(([n, p], i) => <span key={p}>{i > 0 && " / "}<Link prefetch={false} href={p}>{n}</Link></span>)}</nav>
           <h1>{it.h1}</h1>
           <p className="lede">{c.intro}</p>
-          {isFive && <>{nav("start5", "Starting with")}{nav("end5", "Ending in")}{nav("with5", "Containing")}</>}
           {it.kind === "len" && <div className="letter-nav"><span className="small muted">Length</span>{[2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => <Link prefetch={false} key={n} href={`/${n}-letter-words/`} className={n === it.n ? "on" : undefined}>{n}</Link>)}</div>}
+          {isSub && <div className="letter-nav"><span className="small muted">Length</span>{SUB_LENGTHS.map((m) => { const x = lists.find((y) => y.kind === it.kind && y.n === m && y.letter === it.letter); return x ? <Link prefetch={false} key={m} href={x.path} className={m === it.n ? "on" : undefined} aria-current={m === it.n ? "page" : undefined}>{m}</Link> : <span key={m} className="off">{m}</span>; })}</div>}
+          {showNavs && <>{nav("start", "Starting with", navN)}{nav("end", "Ending in", navN)}{nav("with", "Containing", navN)}</>}
+          {isCombo && <>{comboRow(`Start ${it.letter!.toUpperCase()} · ending in`, (l) => byStartEnd(it.letter!, l))}{comboRow(`End ${it.letter2!.toUpperCase()} · starting with`, (l) => byStartEnd(l, it.letter2!))}</>}
+          {it.kind === "start" && it.n === 5 && comboRow("Also ending in", (l) => byStartEnd(it.letter!, l))}
+          {it.kind === "end" && it.n === 5 && comboRow("Also starting with", (l) => byStartEnd(l, it.letter!))}
         </div>
       </div>
       <div className="wrap lists">

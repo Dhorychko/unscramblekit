@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: `${SITE.name}: Word Unscrambler & Word Game Helpers`, template: `%s | ${SITE.name}` },
   description: SITE.description,
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   openGraph: { siteName: SITE.name, type: "website", locale: "en_US", images: [{ url: "/og.png", width: 1200, height: 630, alt: SITE.name }] },
   twitter: { card: "summary_large_image" },
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,

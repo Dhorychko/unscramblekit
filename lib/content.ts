@@ -147,22 +147,49 @@ export function listContent(it: ListItem, d: ListData): Content {
         related: n === 5 ? ["wordle-solver", "home", "scrabble-word-finder"] : ["home", "scrabble-word-finder", "anagram-solver"],
       };
     }
-    case "start5":
-    case "end5":
-    case "with5": {
-      const what = it.kind === "start5" ? `starting with ${L}` : it.kind === "end5" ? `ending in ${L}` : `with ${L}`;
-      const whatLong = it.kind === "with5" ? `containing the letter ${L}` : what;
+    case "start":
+    case "end":
+    case "with": {
+      const n = it.n!;
+      const isFive = n === 5;
+      const what = it.kind === "start" ? `starting with ${L}` : it.kind === "end" ? `ending in ${L}` : `with ${L}`;
+      const whatLong = it.kind === "with" ? `containing the letter ${L}` : what;
+      const noun = (x: number) => plural(x, `${n}-letter word`, `${n}-letter words`);
       return {
-        meta: fitMeta([`${plural(d.total, "five-letter word", "five-letter words")} ${whatLong}${d.commonTotal ? `, ${common} of them common` : ""}.`, `Examples: ${ex}.`, "Common words come first, handy for Wordle."]),
-        intro: `${plural(d.total, "five-letter word", "five-letter words")} ${whatLong}${d.commonTotal ? `, including ${plural(d.commonTotal, "common word", "common words")} such as ${ex}` : `, such as ${ex}`}. Common words come first because they are the likeliest Wordle answers.`,
-        steps: ["Start with the common words.", "Cross out words with letters you've already ruled out.", "For green and yellow clues together, use the Wordle solver."],
+        meta: fitMeta([`${noun(d.total)} ${whatLong}${d.commonTotal ? `, ${common} of them common` : ""}.`, `Examples: ${ex}.`, isFive ? "Common words come first, handy for Wordle." : "Common words come first, then rarer ones."]),
+        intro: `${noun(d.total)} ${whatLong}${d.commonTotal ? `, including ${plural(d.commonTotal, "common word", "common words")} such as ${ex}` : `, such as ${ex}`}. Common words are listed first${isFive ? ", because they are the likeliest Wordle answers" : ""}.`,
+        steps: isFive
+          ? ["Start with the common words.", "Cross out words with letters you've already ruled out.", "For green and yellow clues together, use the Wordle solver."]
+          : ["Start with the common words.", "Use the links above to switch the letter or the word length.", "To find words from the specific letters you hold, use the word unscrambler."],
         tips: d.total < 30 ? [] : [
-          ...(top.length ? [`In common 5-letter words ${what}, the most frequent letter at each position is ${top.join(" · ")}.`] : []),
-          ...(d.starters.length ? [`Good guesses to test more letters: ${d.starters.slice(0, 4).map(U).join(", ")}.`] : []),
+          ...(d.commonTotal ? [`Of the ${total} ${n}-letter words ${whatLong}, ${common} (about ${Math.round((d.commonTotal / d.total) * 100)}%) are common everyday words${isFive ? " — the ones worth trying first in Wordle" : ""}.`] : []),
+          ...(top.length ? [`In common ${n}-letter words ${what}, the most frequent letter at each position is ${top.join(" · ")}.`] : []),
+          ...(isFive && d.starters.length ? [`Good Wordle guesses to test more letters: ${d.starters.slice(0, 4).map(U).join(", ")}.`] : []),
         ],
         faq: [
-          { q: `How many 5-letter words ${whatLong} are there?`, a: `${total} in this list, ${common} of them common.` },
-          { q: "Which one is today's Wordle answer?", a: "This list doesn't know the daily answer. Enter your colored guesses in the Wordle solver to narrow it down." },
+          { q: `How many ${n}-letter words ${whatLong} are there?`, a: `${total} in this list, ${common} of them common.` },
+          ...(isFive
+            ? [{ q: "Which one is today's Wordle answer?", a: "This list doesn't know the daily answer. Enter your colored guesses in the Wordle solver to narrow it down." }]
+            : [{ q: `What are common ${n}-letter words ${whatLong}?`, a: `The common ones are listed first above${d.commonTotal ? `, such as ${ex}` : ""}.` }]),
+        ],
+        related: isFive ? ["wordle-solver", "5-letter-words", "home"] : [`${n}-letter-words`, "home", "scrabble-word-finder"],
+      };
+    }
+    case "startend": {
+      const n = it.n!;
+      const L2 = U(it.letter2 ?? "");
+      const whatLong = `starting with ${L} and ending in ${L2}`;
+      return {
+        meta: fitMeta([`${plural(d.total, `${n}-letter word`, `${n}-letter words`)} ${whatLong}${d.commonTotal ? `, ${common} of them common` : ""}.`, `Examples: ${ex}.`, "Common words first — great for Wordle."]),
+        intro: `${plural(d.total, `${n}-letter word`, `${n}-letter words`)} ${whatLong}${d.commonTotal ? `, including ${plural(d.commonTotal, "common word", "common words")} such as ${ex}` : `, such as ${ex}`}. Common words are listed first because they are the likeliest Wordle answers.`,
+        steps: ["Start with the common words.", "Cross out any that use letters you've already ruled out (gray in Wordle).", "For green and yellow clues together, use the Wordle solver."],
+        tips: d.total < 30 ? [] : [
+          ...(d.commonTotal ? [`Of the ${total} ${n}-letter words ${whatLong}, ${common} (about ${Math.round((d.commonTotal / d.total) * 100)}%) are common everyday words — try those first in Wordle.`] : []),
+          ...(top.length ? [`Most frequent letter at each position in common words ${whatLong}: ${top.join(" · ")}.`] : []),
+        ],
+        faq: [
+          { q: `How many ${n}-letter words start with ${L} and end in ${L2}?`, a: `${total} in this list, ${common} of them common.` },
+          { q: "Which one is today's Wordle answer?", a: "This list doesn't know the daily answer. Enter the green, yellow and gray clues you have in the Wordle solver to narrow it down." },
         ],
         related: ["wordle-solver", "5-letter-words", "home"],
       };
