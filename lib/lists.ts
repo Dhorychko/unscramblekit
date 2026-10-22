@@ -1,7 +1,7 @@
 // Build-time only: word lists and stats for the static list pages.
 import fs from "node:fs";
 import path from "node:path";
-import { SUB_LENGTHS, COMBO_LENGTHS, countKey, comboKey, listItems, type ListItem } from "./catalog";
+import { SUB_LENGTHS, COMBO_LENGTHS, countKey, comboKey, floorFor, listItems, type ListItem } from "./catalog";
 import { isCommon } from "./solve";
 
 const COMMON_CAP = 2500, MORE_CAP = 500;
@@ -15,6 +15,8 @@ export function entries(): [string, number][] {
 
 /** Lists with fewer words than this are too thin to index on their own. */
 export const THIN = 30;
+/** Too thin to index: under 30 words, except short 5-letter start/end lists that people search for anyway. */
+export const isThin = (it: ListItem, total: number) => total < Math.min(THIN, floorFor(it.kind, it.n));
 
 let LISTS: ListItem[] | null = null;
 export function allLists(): ListItem[] {

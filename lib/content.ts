@@ -157,17 +157,23 @@ export function listContent(it: ListItem, d: ListData): Content {
       const noun = (x: number) => plural(x, `${n}-letter word`, `${n}-letter words`);
       return {
         meta: fitMeta([`${noun(d.total)} ${whatLong}${d.commonTotal ? `, ${common} of them common` : ""}.`, `Examples: ${ex}.`, isFive ? "Common words come first, handy for Wordle." : "Common words come first, then rarer ones."]),
-        intro: `${noun(d.total)} ${whatLong}${d.commonTotal ? `, including ${plural(d.commonTotal, "common word", "common words")} such as ${ex}` : `, such as ${ex}`}. Common words are listed first${isFive ? ", because they are the likeliest Wordle answers" : ""}.`,
+        intro: d.total < 30
+          // Short lists: name every word and say plainly how rare the pattern is, instead of template copy.
+          ? `There are only ${noun(d.total)} ${whatLong} in our list: ${[...d.common, ...d.more].map(U).join(", ")}. ${d.commonTotal ? (d.commonTotal === 1 ? `Only ${U(d.common[0])} is an everyday word, so it is listed first.` : `${d.commonTotal} of them are everyday words and are listed first.`) : `None of them is an everyday word, so ${what} is a rare pattern${isFive ? " for a Wordle answer" : ""}.`}`
+          : `${noun(d.total)} ${whatLong}${d.commonTotal ? `, including ${plural(d.commonTotal, "common word", "common words")} such as ${ex}` : `, such as ${ex}`}. Common words are listed first${isFive ? ", because they are the likeliest Wordle answers" : ""}.`,
         steps: isFive
           ? ["Start with the common words.", "Cross out words with letters you've already ruled out.", "For green and yellow clues together, use the Wordle solver."]
           : ["Start with the common words.", "Use the links above to switch the letter or the word length.", "To find words from the specific letters you hold, use the word unscrambler."],
-        tips: d.total < 30 ? [] : [
+        tips: d.total < 30 ? [
+          `${L} is one of the least common letters ${it.kind === "start" ? "at the start" : it.kind === "end" ? "at the end" : "in"} of English ${n}-letter words, which is why this list is so short.`,
+          ...(isFive ? [`In Wordle, a yellow or green ${L} narrows the answer fast: try the Wordle solver with your colors instead of guessing from the list.`] : []),
+        ] : [
           ...(d.commonTotal ? [`Of the ${total} ${n}-letter words ${whatLong}, ${common} (about ${Math.round((d.commonTotal / d.total) * 100)}%) are common everyday words${isFive ? " — the ones worth trying first in Wordle" : ""}.`] : []),
           ...(top.length ? [`In common ${n}-letter words ${what}, the most frequent letter at each position is ${top.join(" · ")}.`] : []),
           ...(isFive && d.starters.length ? [`Good Wordle guesses to test more letters: ${d.starters.slice(0, 4).map(U).join(", ")}.`] : []),
         ],
         faq: [
-          { q: `How many ${n}-letter words ${whatLong} are there?`, a: `${total} in this list, ${common} of them common.` },
+          { q: `How many ${n}-letter words ${whatLong} are there?`, a: d.commonTotal ? `${total} in this list, ${common} of them common.` : `${total} in this list, all of them less common or rare words.` },
           ...(isFive
             ? [{ q: "Which one is today's Wordle answer?", a: "This list doesn't know the daily answer. Enter your colored guesses in the Wordle solver to narrow it down." }]
             : [{ q: `What are common ${n}-letter words ${whatLong}?`, a: `The common ones are listed first above${d.commonTotal ? `, such as ${ex}` : ""}.` }]),

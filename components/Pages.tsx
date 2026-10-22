@@ -4,7 +4,7 @@ import JsonLd from "./JsonLd";
 import ToolFor from "./ToolFor";
 import { TOOLS, TOOL_BY_KEY, SUB_LENGTHS, type ListItem, type ToolItem } from "@/lib/catalog";
 import { TOOL_CONTENT, listContent, type Content } from "@/lib/content";
-import { THIN, allLists, listData } from "@/lib/lists";
+import { allLists, isThin, listData } from "@/lib/lists";
 import { SITE, OG_BASE } from "@/lib/site";
 
 export function refOf(key: string): { path: string; title: string } | null {
@@ -92,8 +92,8 @@ export function ToolPage({ tool }: { tool: ToolItem }) {
 export function listMetadata(it: ListItem): Metadata {
   const d = listData(it);
   const c = listContent(it, d);
-  const title = d.total >= THIN ? `${it.title} (${d.total.toLocaleString("en-US")} Words)` : it.title;
-  return { title, ...(d.total < THIN ? { robots: { index: false, follow: true } } : {}), description: c.meta, alternates: { canonical: it.path }, openGraph: { ...OG_BASE, title: `${title} | ${SITE.name}`, description: c.meta, url: it.path } };
+  const title = d.total > 1 ? `${it.title} (${d.total.toLocaleString("en-US")} Words)` : it.title;
+  return { title, ...(isThin(it, d.total) ? { robots: { index: false, follow: true } } : {}), description: c.meta, alternates: { canonical: it.path }, openGraph: { ...OG_BASE, title: `${title} | ${SITE.name}`, description: c.meta, url: it.path } };
 }
 
 const AZ = "abcdefghijklmnopqrstuvwxyz".split("");

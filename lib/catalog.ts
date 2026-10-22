@@ -25,6 +25,10 @@ export const SUB_LENGTHS = [3, 4, 5, 6, 7];
 export const COMBO_LENGTHS = [5];
 /** Only build a subpage when it has at least this many words, so every generated subpage is indexable (not thin). */
 export const GEN_FLOOR = 30;
+/** 5-letter "starting with" / "ending in" pages are real Wordle searches even when the list is short
+ *  ("5 letter words starting with x" has only 7 answers), so they get a much lower floor. */
+export const SHORT_FLOOR = 5;
+export const floorFor = (kind: string, n?: number) => (n === 5 && (kind === "start" || kind === "end") ? SHORT_FLOOR : GEN_FLOOR);
 export const RARE_LETTERS = ["q", "j", "x", "z"];
 
 const SUB_KINDS = ["start", "end", "with"] as const;
@@ -37,7 +41,7 @@ export function listItems(counts: Record<string, number>): ListItem[] {
   for (const n of SUB_LENGTHS) {
     for (const kind of SUB_KINDS) {
       for (const l of AZ) {
-        if ((counts[countKey(kind, n, l)] ?? 0) < GEN_FLOOR) continue;
+        if ((counts[countKey(kind, n, l)] ?? 0) < floorFor(kind, n)) continue;
         const L = l.toUpperCase();
         const seg = kind === "start" ? `starting-with-${l}` : kind === "end" ? `ending-in-${l}` : `with-${l}`;
         const titleWhat = kind === "start" ? `Starting With ${L}` : kind === "end" ? `Ending in ${L}` : `With ${L}`;
